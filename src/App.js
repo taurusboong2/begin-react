@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       <Wrapper>
-        <Hello name="react" color="red" bgc="#eee" />
+        <Hello name="react" color="red" bgc="#eee"  isSpecial={true} binaryO={true} />
         <Hello color="blue" bgc="#e4e4e4" />
       </Wrapper>
       <div style={style}>{name}</div>
