@@ -1,9 +1,9 @@
-import React, { useRef, useState, useMemo } from 'react';
-import CreateUser from './CreateUser';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 import UserList from './UserList';
+import CreateUser from './CreateUser';
 
 function countActiveUsers(users) {
-  console.log('활성 사용자 수를 세는 중...');
+  console.log('활성 사용자 수를 세는중...');
   return users.filter((user) => user.active).length;
 }
 
@@ -13,13 +13,13 @@ function App() {
     email: '',
   });
   const { username, email } = inputs;
-  const onChange = (e) => {
+  const onChange = useCallback((e) => {
     const { name, value } = e.target;
-    setInputs({
+    setInputs((inputs) => ({
       ...inputs,
       [name]: value,
-    });
-  };
+    }));
+  }, []);
   const [users, setUsers] = useState([
     {
       id: 1,
@@ -36,47 +36,42 @@ function App() {
     {
       id: 3,
       username: 'liz',
-      email: 'lizy@example.com',
+      email: 'liz@example.com',
       active: false,
     },
   ]);
 
   const nextId = useRef(4);
-  const onCreate = () => {
+  const onCreate = useCallback(() => {
     const user = {
       id: nextId.current,
       username,
       email,
     };
-
-    setUsers(users.concat(user));
-    //위 코드는 concat을 통한 복사를 활용한 추가 방법.
-    //setUsers([...users, user]);
-    //위 코드는 spread 연산자를 활용한 추가 방법.
+    setUsers((users) => users.concat(user));
 
     setInputs({
       username: '',
       email: '',
     });
     nextId.current += 1;
-  };
+  }, [username, email]);
 
-  const onRemove = (id) => {
-    setUsers(users.filter((user) => user.id != id));
-  };
-
-  const onToggle = (id) => {
-    setUsers(users.map((user) => (user.id === id ? { ...user, active: !user.active } : user)));
-  };
-
+  const onRemove = useCallback((id) => {
+    // user.id 가 파라미터로 일치하지 않는 원소만 추출해서 새로운 배열을 만듬
+    // = user.id 가 id 인 것을 제거함
+    setUsers((users) => users.filter((user) => user.id !== id));
+  }, []);
+  const onToggle = useCallback((id) => {
+    setUsers((users) => users.map((user) => (user.id === id ? { ...user, active: !user.active } : user)));
+  }, []);
   const count = useMemo(() => countActiveUsers(users), [users]);
-
   return (
-    <div>
+    <>
       <CreateUser username={username} email={email} onChange={onChange} onCreate={onCreate} />
       <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
-      <div>활성 사용자 수 : {count}</div>
-    </div>
+      <div>활성사용자 수 : {count}</div>
+    </>
   );
 }
 
