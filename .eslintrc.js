@@ -26,7 +26,7 @@ module.exports = {
     PHASE: 'readonly',
   },
   rules: {
-    'prettier/prettier': ['error'],
+    'prettier/prettier': ['error', { singleQuote: true, parser: 'flow' }],
     'linebreak-style': ['error', 'unix'],
     'prefer-const': 'error',
     'no-var': 'error',
